@@ -1,7 +1,5 @@
-from typing import Dict
-
 from fastapi import APIRouter
-from schemas import SOrderUpdate, SOrderResult
+from schemas import SOrderUpdate
 
 router = APIRouter(
     prefix='/v1',
@@ -9,5 +7,5 @@ router = APIRouter(
 )
 
 @router.post('/order')
-async def update_order(order: SOrderUpdate) -> SOrderUpdate:
-    return order
+async def update_order(orders: list[SOrderUpdate]) -> list[SOrderUpdate]:
+    return orders

@@ -39,8 +39,9 @@ async def update_order(orders: list[SOrderUpdate], credentials: Annotated[HTTPBa
                         'error': ''
                     }
                     #добавляем оплату к заказу
-                    #res = requests.get()
-                    orders_dict[order.ЗаказКлиента_id] = 'order_payment_add'
+                    # url_request = 'https://erp-dev.vkvadrate.ru/api/orders/order-payment/'
+                    res = requests.get('https://erp-dev.vkvadrate.ru/api/orders/order-payment/', params={'order-id':order.ЗаказКлиента_id, 'doc-id':order.ДокументОплаты_id, 'sum':order.СуммаОплаты, 'key':'bc50571e-f48e-4922-9f32-d5a7aa98dccd'}).json()
+                    orders_dict[order.ЗаказКлиента_id] = res
                 else:
                     # обновляем или создаем заказ
                     url_request = 'https://erp-dev.vkvadrate.ru/api/orders/update-order-status/?order-id='+order.ЗаказКлиента_id
@@ -61,9 +62,7 @@ async def update_order(orders: list[SOrderUpdate], credentials: Annotated[HTTPBa
             success=res['success'],
             orders=orders_dict,
             credentials=credentials_dict,
-            error=res['error'],
-            date=res['date'],
-            data=res['data']
+            error=''
         )
     else:
         response.status_code = status.HTTP_401_UNAUTHORIZED

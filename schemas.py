@@ -11,3 +11,4 @@ class SOrderResult(BaseModel):
     orders: dict
     credentials: dict
     error: str = None
+    test: str = None

@@ -22,6 +22,7 @@ async def update_order(orders: list[SOrderUpdate], credentials: Annotated[HTTPBa
         'success': False,
         'error': 'Order id 1c empty'
     }
+    # убрать перед релизом
     credentials_dict = {"username": credentials.username, "password": credentials.password}
     orders_dict = {}
     auth_res = auth(credentials.username, credentials.password)

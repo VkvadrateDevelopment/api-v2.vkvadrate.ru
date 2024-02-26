@@ -9,4 +9,5 @@ class SOrderUpdate(BaseModel):
 class SOrderResult(BaseModel):
     success: bool
     orders: dict
+    credentials: dict
     error: str = None

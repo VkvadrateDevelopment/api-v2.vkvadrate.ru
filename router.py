@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Response, Depends, security, HTTPException, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from schemas import SOrderUpdate, SOrderResult
 import requests
@@ -14,7 +15,10 @@ security = HTTPBasic()
 
 @router.get('/user')
 async def read_current_user(credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    return {"username": credentials.username, "password": credentials.password}
+    url_request = 'https://erp-dev.vkvadrate.ru/api/orders/update-order-status/?order-id=38fc773b-c67d-11ee-b2f4-00155d86b304'
+    res = requests.get(url_request)
+    # res_encode = jsonable_encoder(res)
+    return res.json()
 
 @router.post('/order')
 async def update_order(orders: list[SOrderUpdate], credentials: Annotated[HTTPBasicCredentials, Depends(security)], response: Response) -> SOrderResult:
@@ -39,12 +43,15 @@ async def update_order(orders: list[SOrderUpdate], credentials: Annotated[HTTPBa
                     orders_dict[order.ЗаказКлиента_id] = 'order_payment_add'
                 else:
                     # обновляем или создаем заказ
-                    res = requests.get('https://erp-dev.vkvadrate.ru/api/orders/update-order-status/', params={order-id: order.ЗаказКлиента_id})
-                    res = {
-                        'success': True,
-                        'error': ''
-                    }
-                    orders_dict[order.ЗаказКлиента_id] = 'order_update'
+                    url_request = 'https://erp-dev.vkvadrate.ru/api/orders/update-order-status/?order-id='+order.ЗаказКлиента_id
+                    res = requests.get(url_request).json()
+                    # res = requests.get('https://erp-dev.vkvadrate.ru/api/orders/update-order-status/', params={order-id:order.ЗаказКлиента_id})
+                    # res = {
+                    #     'success': True,
+                    #     'action': 'order_update | order_add | order_payment_add',
+                    #     'error': ''
+                    # }
+                    orders_dict[order.ЗаказКлиента_id] = res
             else:
                 res = {
                     'success': False,
@@ -54,7 +61,9 @@ async def update_order(orders: list[SOrderUpdate], credentials: Annotated[HTTPBa
             success=res['success'],
             orders=orders_dict,
             credentials=credentials_dict,
-            error=res['error']
+            error=res['error'],
+            date=res['date'],
+            data=res['data']
         )
     else:
         response.status_code = status.HTTP_401_UNAUTHORIZED
